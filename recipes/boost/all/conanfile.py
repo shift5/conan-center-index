@@ -8,6 +8,7 @@ from conans.errors import ConanInvalidConfiguration
 import os
 import sys
 import shutil
+import shlex
 
 try:
     from cStringIO import StringIO
@@ -310,6 +311,15 @@ class BoostConan(ConanFile):
                     self.output.info('found python library: %s' % python_lib)
                     return python_lib.replace('\\', '/')
         raise ConanInvalidConfiguration("couldn't locate python libraries - make sure you have installed python development files")
+
+    @property
+    def _python_libs(self):
+        py_cfg = "python%s-config" % self._python_version
+        cmd = "%s --libs" % py_cfg
+        output = StringIO()
+        self.run(cmd, output=output)
+        libs = [l.lstrip("-l") for l in shlex.split(output.getvalue())]
+        return libs
 
     def _clean(self):
         src = os.path.join(self.source_folder, self._folder_name)
@@ -928,6 +938,8 @@ class BoostConan(ConanFile):
                 self.cpp_info.defines.append("BOOST_ERROR_CODE_HEADER_ONLY")
 
             if not self.options.without_python:
+                self.cpp_info.includedirs.extend([self._python_includes])
+                self.cpp_info.libs.extend(self._python_libs)
                 if not self.options.shared:
                     self.cpp_info.defines.append("BOOST_PYTHON_STATIC_LIB")
 
