@@ -80,6 +80,8 @@ class LibcurlConan(ConanFile):
         del self.settings.compiler.libcxx
         del self.settings.compiler.cppstd
 
+        self.options["*"].shared = self.options.shared
+
         # be careful with those flags:
         # - with_openssl AND darwin_ssl uses darwin_ssl (to maintain recipe compatibilty)
         # - with_openssl AND NOT darwin_ssl uses openssl
@@ -121,6 +123,7 @@ class LibcurlConan(ConanFile):
         self.requires.add("zlib/1.2.11")
 
     def package_id(self):
+        self.info.shared_library_package_id()
         if self.options.with_openssl:
             self.info.requires["openssl"].minor_mode()
 
