@@ -929,7 +929,7 @@ class BoostConan(ConanFile):
 
             if not self.options.without_python:
                 self.cpp_info.includedirs.extend([self._python_includes])
-                self.cpp_info.libs.extend(self._python_libs)
+                self.cpp_info.system_libs.extend(self._python_libs)
                 if not self.options.shared:
                     self.cpp_info.defines.append("BOOST_PYTHON_STATIC_LIB")
 
