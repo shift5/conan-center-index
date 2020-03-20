@@ -44,7 +44,7 @@ class ProtocConan(ConanFile):
                                            "Visual Studio 2015 or higher.")
 
     def requirements(self):
-        self.requires.add("protobuf/{}@shift5/testing".format(self.version), private=False)
+        self.requires.add("protobuf/{}@shift5/stable".format(self.version), private=False)
 
     def _configure_cmake(self):
         cmake = CMake(self)
