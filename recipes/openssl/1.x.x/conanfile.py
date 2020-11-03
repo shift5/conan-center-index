@@ -650,6 +650,8 @@ class OpenSSLConan(ConanFile):
                     if self.settings.os == "tvOS":
                         tools.patch(patch_file=os.path.join("patches", "1.1.1-tvos.patch"),
                                     base_path=self._source_subfolder)
+                    tools.patch(patch_file=os.path.join("patches", "1.1.1-aarch64-linking.patch"),
+                            base_path=self._source_subfolder)
                     self._create_targets()
                 else:
                     self._patch_configure()
