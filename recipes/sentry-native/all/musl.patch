@@ -1,0 +1,28 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2a57bb2..ea26b1c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -314,6 +314,9 @@ if(LINUX)
+ 	if(SENTRY_LINK_PTHREAD)
+ 		target_link_libraries(sentry PRIVATE pthread)
+ 	endif()
++	if(SENTRY_WITH_LIBBACKTRACE )
++		target_link_libraries(sentry PRIVATE execinfo)
++	endif()
+ 	target_link_libraries(sentry PRIVATE dl)
+ elseif(ANDROID)
+ 	target_link_libraries(sentry PRIVATE dl log)
+diff --git a/src/sentry_sync.h b/src/sentry_sync.h
+index 360e14f..f7ef0e5 100644
+--- a/src/sentry_sync.h
++++ b/src/sentry_sync.h
+@@ -197,6 +197,9 @@ typedef pthread_t sentry_threadid_t;
+ typedef pthread_mutex_t sentry_mutex_t;
+ typedef pthread_cond_t sentry_cond_t;
+ #    ifdef SENTRY_PLATFORM_LINUX
++#        ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
++#            define PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP {{{PTHREAD_MUTEX_RECURSIVE}}}
++#        endif
+ #        define SENTRY__MUTEX_INIT PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+ #    else
+ #        define SENTRY__MUTEX_INIT PTHREAD_RECURSIVE_MUTEX_INITIALIZER
