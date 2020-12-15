@@ -1,9 +1,7 @@
 import os
-import sys
 import glob
 from conans import ConanFile, CMake, tools
 from conans.errors import ConanInvalidConfiguration
-from conans.util.env_reader import get_env
 
 
 class SentryNativeConan(ConanFile):
@@ -54,7 +52,7 @@ class SentryNativeConan(ConanFile):
 
     def system_requirements(self):
         if tools.os_info.is_linux and tools.os_info.linux_distro == "alpine":
-            cmd = "%sapk add libexecinfo-dev" % self._get_sudo_str()
+            cmd = "%sapk add libexecinfo-dev" % tools.SystemPackageTool._get_sudo_str()
             self.run(cmd)
 
     def source(self):
@@ -105,21 +103,3 @@ class SentryNativeConan(ConanFile):
 
         if not self.options.shared:
             self.cpp_info.defines = ["SENTRY_BUILD_STATIC"]
-
-    def _is_sudo_enabled(self):
-        if "CONAN_SYSREQUIRES_SUDO" not in os.environ:
-            if not which("sudo"):
-                return False
-            if os.name == 'posix' and os.geteuid() == 0:
-                return False
-            if os.name == 'nt':
-                return False
-        return get_env("CONAN_SYSREQUIRES_SUDO", True)
-
-    def _get_sudo_str(self):
-        if not self._is_sudo_enabled():
-            return ""
-        if hasattr(sys.stdout, "isatty") and not sys.stdout.isatty():
-            return "sudo -A "
-        else:
-            return "sudo "
